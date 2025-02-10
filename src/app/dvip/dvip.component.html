@@ -1,0 +1,63 @@
+<div class="container mx-auto">
+    <header class="flex flex-col items-center justify-center p-10 w-full">
+        <nav class="flex justify-between items-center w-full">
+            <a class="text-xl lg:text-3xl font-bold text-black text-center w-full" routerLink="#">Burst Van Pictures</a>
+        </nav>
+    </header>
+    <main>
+        <div id="van-number" class="container w-full">
+            <h1 class="text-lg font-bold text-black text-center">Van Number</h1>
+            <div class="form-group h-16 my-4 rounded-lg w-fit mx-auto border flex flex-row justify-center">
+                @if(!vanNumberError) {
+                    <label for="vanNumber" class="text-center w-20 py-5 border-r-1 lg:py-2 lg:px-3 bg-slate-300 rounded-l-lg lg:w-1/2">{{isEDV ? 'EDV' : 'BL'}}</label>
+                } @else {
+                    <label for="vanNumber" class="text-center w-20 py-5 border-r-1 lg:py-2 lg:px-3 bg-red-600 rounded-l-lg lg:w-1/2">Error</label>
+                }
+                <input type="text" name="vanNumber" [formControl]="vanNumber" class="form-control w-32 lg:w-full p-2 rounded-r-lg disabled:bg-slate-300 disabled:text-white disabled:cursor-not-allowed" id="vanNumber" placeholder="Van Number" >
+            </div>
+            @if ((vanNumber.value!.length < 2 || vanNumber!.value!.length > 4) && vanNumber!.touched) {
+                <p class="text-red-600 text-center mb-4">
+                    Please enter a valid van number.
+                </p>
+            }
+        </div>
+        @if(vanNumber.dirty && !vanNumberError) {
+            <div id="pictures" class="container w-full">
+                <h1 class="text-lg font-bold text-black text-center">Pictures</h1>
+                <div id="pictures-container" class="grid grid-cols-2 gap-4 w-full">
+                    <div class="flex flex-row justify-center" id="frontSide">
+                        <label for="front-side" id="labelFrontView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
+                            <span class="relative">Front Side</span>
+                        </label>
+                    </div>
+                    <div class="flex flex-row justify-center" id="backSide">
+                        <label for="back-side" id="labelBackView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
+                            <span class="relative">Back Side</span>
+                        </label>
+                    </div>
+                    <div class="flex flex-row justify-center" id="leftView">
+                        <label for="left-view" id="labelLeftView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
+                            <span class="relative">Left Side</span>
+                        </label>
+                    </div>
+                    <div class="flex flex-row justify-center" id="rightView">
+                        <label for="right-view" id="labelRightView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
+                            <span class="relative">Right Side</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="uploadButton">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg" id="uploadButton">Upload</button>
+            </div>
+        }
+    </main>
+</div>
+
+<div id="inputs-container">
+    <input type="file" accept="image/*" name="front-side" class="opacity-0" id="front-side" placeholder="Front Side" capture="environment" (change)="onFileChange($event, 'front-side')">
+    <input type="file" accept="image/*" name="back-side" class="opacity-0" id="back-side" placeholder="Back Side" capture="environment" (change)="onFileChange($event, 'back-side')">
+    <input type="file" accept="image/*" name="left-view" class="opacity-0" id="left-view" placeholder="Left View" capture="environment" (change)="onFileChange($event, 'left-view')">
+    <input type="file" accept="image/*" name="right-view" class="opacity-0" id="right-view" placeholder="Right View" capture="environment" (change)="onFileChange($event, 'right-view')">
+</div>

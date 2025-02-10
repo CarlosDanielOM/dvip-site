@@ -1,0 +1,56 @@
+<div class="container mx-auto">
+    <header class="flex flex-col items-center justify-center p-10 w-full">
+        <nav class="flex justify-between items-center w-full">
+            <a class="text-4xl lg:text-6xl font-bold text-black text-center w-full" routerLink="/">Burst Van Pictures</a>
+        </nav>
+    </header>
+    <main class="flex flex-col items-center justify-center p-10 ">
+        <div class="form-container mx-auto border-2 border-gray-400 rounded-lg p-10 shadow-lg bg-white shadow-black">
+            <form [formGroup]="login == 'driver' ? driverForm : dispatchForm" (submit)="onSubmit()">
+                @if (login == 'driver') {
+                    <h1 class="text-2xl font-bold text-black text-center">Driver Login</h1>
+                    <div class="form-group h-16 my-4 rounded-lg w-full border flex flex-row justify-center">
+                        <label for="driverPin" class="text-center w-full py-5 border-r-1 lg:px-3 bg-slate-300 rounded-l-lg lg:w-1/2">Driver Pin:</label>
+                        <input type="number" name="driverPin" formControlName="driverPin" class="form-control w-32 lg:w-full p-2 invalid:border-red-600 invalid:text-red-600" id="driverPin" placeholder="Driver Pin">
+                    </div>
+                    @if (driverPin!.invalid && driverPin!.touched) {
+                        <p class="text-red-600 text-center mb-4">
+                            Please enter a valid driver pin.
+                        </p>
+                    }
+                } @else {
+                    <h1 class="text-2xl font-bold text-black text-center">Dispatch Login</h1>
+                    <div class="form-group my-4 h-16 rounded-lg w-full border flex flex-row justify-center">
+                        <label for="email" class="text-center w-full py-5 border-r-1 lg:px-3 bg-slate-300 rounded-l-lg lg:w-1/2">Email:</label>
+                        <input type="email" name="email" formControlName="email" class="form-control w-32 lg:w-full p-2 underline underline-offset-3 focus:no-underline invalid:border-red-600 invalid:text-red-600" id="email" placeholder="example@email.com" >
+                    </div>
+                    @if (email!.invalid && email!.touched) {
+                        <p class="text-red-600 text-center">
+                            Please enter a valid email address.
+                        </p>
+                    }
+                    <div class="form-group h-16 my-4 rounded-lg w-full border flex flex-row justify-center">
+                        <label for="password" class="text-center w-full py-5 border-r-1 lg:px-3 bg-slate-300 rounded-l-lg lg:w-1/2">Password:</label>
+                        <input type="password" name="password" formControlName="password" class="form-control w-32 lg:w-full p-2" id="password" placeholder="********">
+                    </div>
+                    @if (password!.invalid && password!.touched) {
+                        <p class="text-red-600 text-center mb-4">
+                            Please enter a valid password.
+                        </p>
+                    }
+                }
+                <div class="form-group">
+                    @if (login == 'driver') {
+                        <button type="submit" class="btn p-4 w-full bg-sky-600 hover:bg-sky-700 cursor-pointer rounded-full text-white disabled:bg-slate-200 disabled:cursor-not-allowed" [disabled]="driverForm.invalid">Submit</button>
+                    } @else {
+                        <button type="submit" class="btn p-4 w-full bg-sky-600 hover:bg-sky-700 cursor-pointer rounded-full text-white disabled:bg-slate-200 disabled:cursor-not-allowed" [disabled]="dispatchForm.invalid">Submit</button>
+                    }
+                </div>
+                <div class="text-center mt-4 flex flex-row justify-between">
+                    <a class="text-white hover:text-blue-700 cursor-pointer w-30 p-2 text-sm lg:w-34 w-30 p-2 lg:text-lg lg:p-2 rounded-full bg-sky-500" routerLink="/login/driver">Driver Login</a>
+                    <a class="text-white hover:text-orange-700 cursor-pointer w-30 p-2 text-sm lg:w-34 w-30 p-2 lg:text-lg lg:p-2 rounded-full bg-orange-500" routerLink="/login/dispatch">Dispatch Login</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
