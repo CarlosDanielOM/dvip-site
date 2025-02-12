@@ -1,26 +1,33 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PicturesService {
 
-  constructor() { }
+  constructor(
+    private http: HttpClient
+  ) { }
 
-  savePictureToLocalStorage(picture: string, type: string) {
-    localStorage.setItem(type, picture);
+  uploadPicture(formData: any) {
+    return this.http.post(`${environment.API_URL}/pictures`, formData, {
+      reportProgress: true,
+      observe: 'events'
+    });
   }
 
-  getPictureFromLocalStorage(type: string) {
-    return localStorage.getItem(type);
+  savePictureToSessionStorage(picture: string, type: string) {
+    sessionStorage.setItem(type, picture);
   }
 
-  deletePictureFromLocalStorage(type: string) {
-    localStorage.removeItem(type);
+  getPictureFromSessionStorage(type: string) {
+    return sessionStorage.getItem(type);
   }
 
-  clearLocalStorage() {
-    localStorage.clear();
+  deletePictureFromSessionStorage(type: string) {
+    sessionStorage.removeItem(type);
   }
   
 }

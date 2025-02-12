@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../environments/environment.development';
+import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +17,10 @@ export class LoginService {
 
   loginDriver(driverPin: number) {
     if(driverPin === 5345) {
+      sessionStorage.setItem('driver', JSON.stringify({
+        'firstName': 'Carlos',
+        'lastName': 'Ordonez'
+      }));
       return true;
     } 
     return false;

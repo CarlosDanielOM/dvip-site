@@ -21,17 +21,23 @@
                 </p>
             }
         </div>
-        @if(vanNumber.dirty && !vanNumberError) {
+        @if(picturesViewable) {
+            <!-- @if(true) { -->
             <div id="pictures" class="container w-full">
                 <h1 class="text-lg font-bold text-black text-center">Pictures</h1>
                 <div id="pictures-container" class="grid grid-cols-2 gap-4 w-full">
-                    <div class="flex flex-row justify-center" id="frontSide">
-                        <label for="front-side" id="labelFrontView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
+                    <div class="flex flex-row justify-center" id="frontView">
+                        <label for="front-view" id="labelFrontView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
                             <span class="relative">Front Side</span>
                         </label>
                     </div>
-                    <div class="flex flex-row justify-center" id="backSide">
-                        <label for="back-side" id="labelBackView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
+                    <div class="flex flex-row justify-center" id="rightView">
+                        <label for="right-view" id="labelRightView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
+                            <span class="relative">Right Side</span>
+                        </label>
+                    </div>
+                    <div class="flex flex-row justify-center" id="backView">
+                        <label for="back-view" id="labelBackView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
                             <span class="relative">Back Side</span>
                         </label>
                     </div>
@@ -40,24 +46,21 @@
                             <span class="relative">Left Side</span>
                         </label>
                     </div>
-                    <div class="flex flex-row justify-center" id="rightView">
-                        <label for="right-view" id="labelRightView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
-                            <span class="relative">Right Side</span>
-                        </label>
-                    </div>
                 </div>
             </div>
 
-            <div class="uploadButton">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg" id="uploadButton">Upload</button>
+            <div class="uploadButton flex flex-row justify-around my-4">
+                <button class="bg-blue-500 hover:bg-blue-700 text-white text-xl font-bold py-2 px-4 rounded-lg" id="uploadButton">Done</button>
+                <button class="bg-red-500 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 rounded-lg" id="resetButton" (click)="reset()">Reset</button>
+            </div>
+            <progress min="0" max="100" value="0" class="slider w-96 mx-auto" id="myRange" disabled ></progress>
+            <div id="inputs-container" class="fixed bottom-[-99vh]">
+                <input type="file" accept="image/*" name="front-view" class="opacity-0" id="front-view" placeholder="Front View" capture="environment" (change)="onFileChange($event, 'front-view')">
+                <input type="file" accept="image/*" name="back-view" class="opacity-0" id="back-view" placeholder="Back View" capture="environment" (change)="onFileChange($event, 'back-view')">
+                <input type="file" accept="image/*" name="left-view" class="opacity-0" id="left-view" placeholder="Left View" capture="environment" (change)="onFileChange($event, 'left-view')">
+                <input type="file" accept="image/*" name="right-view" class="opacity-0" id="right-view" placeholder="Right View" capture="environment" (change)="onFileChange($event, 'right-view')">
             </div>
         }
     </main>
 </div>
 
-<div id="inputs-container">
-    <input type="file" accept="image/*" name="front-side" class="opacity-0" id="front-side" placeholder="Front Side" capture="environment" (change)="onFileChange($event, 'front-side')">
-    <input type="file" accept="image/*" name="back-side" class="opacity-0" id="back-side" placeholder="Back Side" capture="environment" (change)="onFileChange($event, 'back-side')">
-    <input type="file" accept="image/*" name="left-view" class="opacity-0" id="left-view" placeholder="Left View" capture="environment" (change)="onFileChange($event, 'left-view')">
-    <input type="file" accept="image/*" name="right-view" class="opacity-0" id="right-view" placeholder="Right View" capture="environment" (change)="onFileChange($event, 'right-view')">
-</div>
