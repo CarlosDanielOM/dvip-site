@@ -18,6 +18,10 @@ export class PicturesService {
     });
   }
 
+  resetPictures(pictures: string[]) {
+    return this.http.delete(`${environment.API_URL}/pictures`, {body: pictures});
+  } 
+
   savePictureToSessionStorage(picture: string, type: string) {
     sessionStorage.setItem(type, picture);
   }
