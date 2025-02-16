@@ -5,6 +5,7 @@ import { PicturesService } from '../pictures.service';
 import { HttpEventType } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
+import imageCompression from 'browser-image-compression';
 
 @Component({
   selector: 'app-dvip',
@@ -38,6 +39,12 @@ export class DvipComponent {
   date: string = '';
   week: string = '';
 
+  compressionOptions = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 4000,
+    useWebWorker: true
+  }
+
   constructor(
     private elRef: ElementRef,
     private picturesService: PicturesService,
@@ -50,7 +57,7 @@ export class DvipComponent {
       this.vanNumber.disable();
 
       for(let type of this.types) {
-        let picture = this.picturesService.getPictureFromSessionStorage(type);
+        let picture = this.picturesService.getPictureFromLocalStorage(type);
         if(picture) {
           this.previewPicture(type, picture);
         }
@@ -59,8 +66,8 @@ export class DvipComponent {
   }
 
   ngOnInit(): void {
-    let driver = sessionStorage.getItem('driver');
-    this.van = sessionStorage.getItem('van');
+    let driver = localStorage.getItem('driver');
+    this.van = localStorage.getItem('van');
 
     if(driver) {
       this.driver = JSON.parse(driver);
@@ -96,15 +103,15 @@ export class DvipComponent {
     });
   }
 
-  onFileChange(event: any, type: string) {
+  async onFileChange(event: any, type: string) {
     this.vanNumber.disable();
     this.elRef.nativeElement.querySelector('#myRange').value = 0;
 
-    if(!sessionStorage.getItem('van')) {
-      sessionStorage.setItem('van', this.vanNumber.value!);
+    if(!localStorage.getItem('van')) {
+      localStorage.setItem('van', this.vanNumber.value!);
     }
     
-    const file = event.target.files[0];
+    const file = await imageCompression(event.target.files[0], this.compressionOptions);
     if (file) {
       let formData = new FormData();
       formData.append('driver-name', `${this.driver.firstName}-${this.driver.lastName}`);
@@ -146,7 +153,7 @@ export class DvipComponent {
   }
 
   previewPicture(type: string, data: string) {
-    this.picturesService.savePictureToSessionStorage(data, type);
+    this.picturesService.savePictureToLocalStorage(data, type);
     let side: string = type.split('-')[0];
     side = side.charAt(0).toUpperCase() + side.slice(1);
     this.elRef.nativeElement.querySelector(`#label${side}View`).style.backgroundImage = `url(${data})`;
@@ -155,12 +162,26 @@ export class DvipComponent {
   }
 
   reset() {
-    sessionStorage.removeItem('van');
-    for(let type of this.types) {
-      this.picturesService.deletePictureFromSessionStorage(type);
-    }
-    this.vanNumber.setValue('0');
-    this.vanNumber.enable();
-    this.picturesViewable = false;
+    this.picturesService.resetPictures(this.types, `${this.isEDV ? 'EDV' : 'BL'}${this.vanNumber.value!}`).subscribe(res => {
+      console.log(res);
+      this.resetLocalState();
+    });
+  }
+
+  savePicturesToCloud() {
+    this.picturesService.savePictures(this.types, `${this.isEDV ? 'EDV' : 'BL'}${this.vanNumber.value!}`).subscribe(res => {
+      console.log(res);
+      this.resetLocalState();
+    });
+  }
+
+  resetLocalState() {
+    localStorage.removeItem('van');
+      for(let type of this.types) {
+        this.picturesService.deletePictureFromLocalStorage(type);
+      }
+      this.vanNumber.setValue('0');
+      this.vanNumber.enable();
+      this.picturesViewable = false;
   }
 }
