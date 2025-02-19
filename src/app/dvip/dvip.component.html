@@ -50,7 +50,7 @@
             </div>
 
             <div class="uploadButton flex flex-row justify-around my-4">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white text-xl font-bold py-2 px-4 rounded-lg" id="uploadButton">Done</button>
+                <button class="bg-blue-500 hover:bg-blue-700 text-white text-xl font-bold py-2 px-4 rounded-lg" id="uploadButton" (click)="savePicturesToCloud()">Done</button>
                 <button class="bg-red-500 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 rounded-lg" id="resetButton" (click)="reset()">Reset</button>
             </div>
             <progress min="0" max="100" value="0" class="slider w-96 mx-auto" id="myRange" disabled ></progress>

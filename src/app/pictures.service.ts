@@ -12,26 +12,38 @@ export class PicturesService {
   ) { }
 
   uploadPicture(formData: any) {
-    return this.http.post(`${environment.API_URL}/pictures`, formData, {
+    return this.http.post(`${environment.API_URL}/pictures/upload`, formData, {
       reportProgress: true,
       observe: 'events'
     });
   }
 
-  resetPictures(pictures: string[]) {
-    return this.http.delete(`${environment.API_URL}/pictures`, {body: pictures});
-  } 
-
-  savePictureToSessionStorage(picture: string, type: string) {
-    sessionStorage.setItem(type, picture);
+  resetPictures(types: string[], van: string) {
+    return this.http.delete(`${environment.API_URL}/pictures`, {
+      params: {
+        type: types,
+        van: van
+      }
+    });
   }
 
-  getPictureFromSessionStorage(type: string) {
-    return sessionStorage.getItem(type);
+  savePictures(types: string[], van: string) {
+    return this.http.post(`${environment.API_URL}/pictures`, {
+      types: types,
+      van: van
+    });
   }
 
-  deletePictureFromSessionStorage(type: string) {
-    sessionStorage.removeItem(type);
+  savePictureToLocalStorage(picture: string, type: string) {
+    localStorage.setItem(type, picture);
+  }
+
+  getPictureFromLocalStorage(type: string) {
+    return localStorage.getItem(type);
+  }
+
+  deletePictureFromLocalStorage(type: string) {
+    localStorage.removeItem(type);
   }
   
 }

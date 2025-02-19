@@ -17,7 +17,7 @@ export class LoginService {
 
   loginDriver(driverPin: number) {
     if(driverPin === 5345) {
-      sessionStorage.setItem('driver', JSON.stringify({
+      localStorage.setItem('driver', JSON.stringify({
         'firstName': 'Carlos',
         'lastName': 'Ordonez'
       }));

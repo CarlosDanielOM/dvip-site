@@ -111,7 +111,11 @@ export class DvipComponent {
       localStorage.setItem('van', this.vanNumber.value!);
     }
     
-    const file = await imageCompression(event.target.files[0], this.compressionOptions);
+    // const file = await imageCompression(event.target.files[0], this.compressionOptions);
+    const file = event.target.files[0];
+
+    console.log({original: (event.target.files[0].size / 1024 / 1024).toFixed(2), compressed: (file.size / 1024 / 1024).toFixed(2)});
+    
     if (file) {
       let formData = new FormData();
       formData.append('driver-name', `${this.driver.firstName}-${this.driver.lastName}`);
@@ -139,6 +143,11 @@ export class DvipComponent {
             let progress = value / max;
 
             slider.value = value;
+
+            // if(progress >= 1) {
+            //   let previewURL = `${environment.API_URL}/pictures?key=${event.body.previewName}&?t=${Date.now()}`;
+            //   //this.previewPicture(type, previewURL);
+            // }
             
             break;
           case HttpEventType.Response:
