@@ -1,6 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
+import { catchError, tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +17,15 @@ export class PicturesService {
     return this.http.post(`${environment.API_URL}/pictures/upload`, formData, {
       reportProgress: true,
       observe: 'events'
-    });
+    }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => ({
+          status: error.status,
+          message: error.message,
+          statusText: error.statusText
+        }));
+      })
+    );
   }
 
   resetPictures(types: string[], van: string) {
@@ -27,11 +37,22 @@ export class PicturesService {
     });
   }
 
-  savePictures(types: string[], van: string) {
+  savePictures(driverName: string, driverId: string, vanType: string, vanNumber: number, date: number) {
     return this.http.post(`${environment.API_URL}/pictures`, {
-      types: types,
-      van: van
-    });
+      "driver-name": driverName,
+      "driver-id": driverId,
+      "van-type": vanType,
+      "van-number": vanNumber,
+      date: date
+    }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => ({
+          status: error.status,
+          message: error.message,
+          statusText: error.statusText
+        }));
+      })
+    )
   }
 
   savePictureToLocalStorage(picture: string, type: string) {

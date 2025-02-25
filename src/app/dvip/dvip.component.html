@@ -1,3 +1,9 @@
+<div id="exit">
+    <button class="bg-red-500 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 rounded-lg fixed left-2 top-2" id="exitButton" (click)="exit()">Exit</button>
+</div>
+
+<div id="alerts" class="alert-container fixed right-2 top-2 w-72"></div>
+
 <div class="container mx-auto">
     <header class="flex flex-col items-center justify-center p-10 w-full">
         <nav class="flex justify-between items-center w-full">
@@ -31,9 +37,9 @@
                             <span class="relative">Front Side</span>
                         </label>
                     </div>
-                    <div class="flex flex-row justify-center" id="rightView">
-                        <label for="right-view" id="labelRightView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
-                            <span class="relative">Right Side</span>
+                    <div class="flex flex-row justify-center" id="leftView">
+                        <label for="left-view" id="labelLeftView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
+                            <span class="relative">Driver Side</span>
                         </label>
                     </div>
                     <div class="flex flex-row justify-center" id="backView">
@@ -41,9 +47,9 @@
                             <span class="relative">Back Side</span>
                         </label>
                     </div>
-                    <div class="flex flex-row justify-center" id="leftView">
-                        <label for="left-view" id="labelLeftView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
-                            <span class="relative">Left Side</span>
+                    <div class="flex flex-row justify-center" id="rightView">
+                        <label for="right-view" id="labelRightView" class="w-40 h-40 flex flex-col justify-center items-center border-1 rounded-lg">
+                            <span class="relative">Passenger Side</span>
                         </label>
                     </div>
                 </div>

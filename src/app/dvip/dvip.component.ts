@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, inject } from '@angular/core';
+import { Component, ElementRef, inject, Renderer2 } from '@angular/core';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PicturesService } from '../pictures.service';
 import { HttpEventType } from '@angular/common/http';
@@ -17,7 +17,7 @@ export class DvipComponent {
   EDVRegex = /^[0-9]{4}$/;
   GasRegx = /^[0-9]{2}$/;
   
-  vanNumber = new FormControl({value: '0', disabled: false}, [Validators.required]);
+  vanNumber = new FormControl({value: '', disabled: false}, [Validators.required]);
   vanNumberError: boolean = false;
 
   types: string[] = ['front-view', 'back-view', 'left-view', 'right-view'];
@@ -32,6 +32,8 @@ export class DvipComponent {
 
   editable: boolean = true;
   picturesViewable: boolean = false;
+
+  alertsElement: any;
 
   van: string | null = '';
 
@@ -48,7 +50,8 @@ export class DvipComponent {
   constructor(
     private elRef: ElementRef,
     private picturesService: PicturesService,
-    private router: Router
+    private router: Router,
+    private renderer: Renderer2
   ) { }
 
   ngAfterViewInit(): void {
@@ -63,6 +66,9 @@ export class DvipComponent {
         }
       }
     }
+
+    this.alertsElement = this.elRef.nativeElement.querySelector('#alerts');
+    
   }
 
   ngOnInit(): void {
@@ -111,14 +117,11 @@ export class DvipComponent {
       localStorage.setItem('van', this.vanNumber.value!);
     }
     
-    // const file = await imageCompression(event.target.files[0], this.compressionOptions);
-    const file = event.target.files[0];
+    const file = await imageCompression(event.target.files[0], this.compressionOptions);
 
-    console.log({original: (event.target.files[0].size / 1024 / 1024).toFixed(2), compressed: (file.size / 1024 / 1024).toFixed(2)});
-    
     if (file) {
       let formData = new FormData();
-      formData.append('driver-name', `${this.driver.firstName}-${this.driver.lastName}`);
+      formData.append('driver-name', `${this.driver.first_name}-${this.driver.last_name}`);
       formData.append('van-type', this.isEDV ? 'EDV' : 'BL');
       formData.append('van-number', this.vanNumber.value!);
       formData.append('type', type);
@@ -128,7 +131,6 @@ export class DvipComponent {
       formData.append('image', file);
 
       this.picturesService.uploadPicture(formData).subscribe((event: any) => {
-        console.log(event.type)
         switch (event.type) {
           case HttpEventType.Sent: 
             break;
@@ -144,19 +146,22 @@ export class DvipComponent {
 
             slider.value = value;
 
-            // if(progress >= 1) {
-            //   let previewURL = `${environment.API_URL}/pictures?key=${event.body.previewName}&?t=${Date.now()}`;
-            //   //this.previewPicture(type, previewURL);
-            // }
+            if(progress >= 1) {
+              let pictureName = `${this.isEDV ? 'EDV' : 'BL'}${this.vanNumber.value!}-${type}-${this.driver.first_name}-${this.driver.last_name}-${this.date}.jpg`;
+              let previewURL = `${environment.API_URL}/pictures?key=${pictureName}&?t=${Date.now()}`;
+              this.previewPicture(type, previewURL);
+            }
             
             break;
           case HttpEventType.Response:
-              let previewURL = `${environment.API_URL}/pictures?key=${event.body.previewName}&?t=${Date.now()}`;
-              this.previewPicture(type, previewURL);
+              this.createAlert('Picture Uploaded Successfully!', 'Upload', 'success');
               break;
           default:
             break;
         }
+      },
+      error => {
+        this.handleError(error.status, error.message, 'Upload');
       })
     }
   }
@@ -171,16 +176,27 @@ export class DvipComponent {
   }
 
   reset() {
+
+    let confirmation = confirm('Are you sure you want to reset the pictures?');
+    if(!confirmation) {
+      return;
+    }
+    
     this.picturesService.resetPictures(this.types, `${this.isEDV ? 'EDV' : 'BL'}${this.vanNumber.value!}`).subscribe(res => {
-      console.log(res);
       this.resetLocalState();
+    },
+    error => {
+      this.handleError(error.status, error.message, 'Reset');
     });
   }
 
   savePicturesToCloud() {
-    this.picturesService.savePictures(this.types, `${this.isEDV ? 'EDV' : 'BL'}${this.vanNumber.value!}`).subscribe(res => {
-      console.log(res);
+    this.picturesService.savePictures(`${this.driver.first_name} ${this.driver.last_name}`, this.driver.id, this.isEDV ? 'EDV' : 'BL', parseInt(this.vanNumber.value!), Date.now()).subscribe(res => {
+      this.createAlert('Pictures Saved Successfully!', 'Save', 'success');
       this.resetLocalState();
+    },
+    error => {
+      this.handleError(error.status, error.message, 'Saving');
     });
   }
 
@@ -189,8 +205,147 @@ export class DvipComponent {
       for(let type of this.types) {
         this.picturesService.deletePictureFromLocalStorage(type);
       }
-      this.vanNumber.setValue('0');
+      this.vanNumber.setValue('');
       this.vanNumber.enable();
       this.picturesViewable = false;
+  }
+
+  exit() {
+    this.router.navigate(['/login']);
+  }
+
+  handleError(status: number, message: string = '', type: string = 'Error') {
+    switch(status) {
+      case 400:
+        this.createAlert(message ?? 'Bad Request', type, 'error');
+        break;
+      case 401:
+        this.createAlert(message ?? 'Unauthorized', type, 'error');
+        break;
+      case 403:
+        this.createAlert(message ?? 'Forbidden', type, 'error');
+        break;
+      case 404:
+        this.createAlert(message ?? 'Not Found', type, 'error');
+        break;
+      case 405:
+        this.createAlert(message ?? 'Method Not Allowed', type, 'error');
+        break;
+      case 406:
+        this.createAlert(message ?? 'Not Acceptable', type, 'error');
+        break;
+      case 408:
+        this.createAlert(message ?? 'Request Timeout', type, 'error');
+        break;
+      case 409:
+        this.createAlert(message ?? 'Conflict', type, 'error');
+        break;
+      case 410:
+        this.createAlert(message ?? 'Gone', type, 'error');
+        break;
+      case 422:
+        this.createAlert(message ?? 'Unprocessable Entity', type, 'error');
+        break;
+      case 429:
+        this.createAlert(message ?? 'Too Many Requests', type, 'error');
+        break;
+      case 500:
+        this.createAlert(message ?? 'Internal Server Error', type, 'error');
+        break;
+      case 501: 
+        this.createAlert(message ?? 'Not Implemented', type, 'error');
+        break;
+      case 502:
+        this.createAlert(message ?? 'Bad Gateway', type, 'error');
+        break;
+      case 503:
+        this.createAlert(message ?? 'Service Unavailable', type, 'error');
+        break;
+      case 504:
+        this.createAlert(message ?? 'Gateway Timeout', type, 'error');
+        break;
+      case 505:
+        this.createAlert(message ?? 'HTTP Version Not Supported', type, 'error');
+        break;
+      default:
+        this.createAlert(message ?? 'Something went wrong', type, 'error');
+        break;
+    }
+  }
+
+  createAlert(message: string, type: string, status: string) {
+
+    let color = this.getAlertColor(status);
+    
+    let alert = this.renderer.createElement('div');
+    alert.classList.add('alert');
+    alert.classList.add('w-full');
+    alert.classList.add(`bg-${color}-600`);
+    alert.classList.add('text-white');
+    alert.classList.add('rounded-lg');
+    alert.classList.add('shadow-lg');
+    alert.classList.add('p-2');
+
+    let alertContent = this.renderer.createElement('div');
+    alertContent.classList.add('alert-content');
+    alertContent.classList.add('flex');
+    alertContent.classList.add('flex-col');
+    alertContent.classList.add('justify-center');
+    alertContent.classList.add('items-center');
+
+    let alertTitle = this.renderer.createElement('div');
+    alertTitle.classList.add('alert-title');
+    alertTitle.classList.add('flex');
+    alertTitle.classList.add('flex-row');
+    alertTitle.classList.add('justify-center');
+    alertTitle.classList.add('items-center');
+
+    let alertTitleText = this.renderer.createElement('span');
+    alertTitleText.classList.add('alert-title-text');
+    alertTitleText.classList.add('text-xl');
+    alertTitleText.classList.add('font-bold');
+    alertTitleText.innerText = type;
+
+    alertTitle.appendChild(alertTitleText);
+
+    let alertMessage = this.renderer.createElement('div');
+    alertMessage.classList.add('alert-message');
+    alertMessage.classList.add('flex');
+    alertMessage.classList.add('flex-row');
+    alertMessage.classList.add('justify-center');
+    alertMessage.classList.add('items-center');
+
+    let alertMessageText = this.renderer.createElement('span');
+    alertMessageText.classList.add('alert-message-text');
+    alertMessageText.classList.add('text-lg');
+    alertMessageText.classList.add('font-bold');
+    alertMessageText.innerText = message;
+
+    alertMessage.appendChild(alertMessageText);
+
+    alertContent.appendChild(alertTitle);
+    alertContent.appendChild(alertMessage);
+
+    alert.appendChild(alertContent);
+
+    this.elRef.nativeElement.querySelector('#alerts').appendChild(alert);
+
+    setTimeout(() => {
+      this.elRef.nativeElement.querySelector('#alerts').removeChild(alert);
+    }, 2500)
+    
+  }
+
+  getAlertColor(type: string) {
+    switch(type) {
+      case 'success':
+        return 'green';
+      case 'error':
+        return 'red';
+      case 'warning':
+        return 'yellow';
+      default:
+        return 'blue';
+    }
   }
 }
