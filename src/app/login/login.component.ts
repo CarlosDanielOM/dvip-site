@@ -37,11 +37,12 @@ export class LoginComponent {
 
   onSubmit() {
     if(this.login == 'driver') {
-      if(this.loginService.loginDriver(Number(this.driverPin!.value!))) {
-        this.router.navigate(['dvip/pictures']);
-      } else {
-        alert('Driver Login Failed');
-      }
+      this.loginService.loginDriver(parseInt(this.driverPin!.value!)).subscribe((data: any) => {
+        if(data.valid) {
+          localStorage.setItem('driver', JSON.stringify(data.data));
+          this.router.navigate(['dvip/pictures']);
+        }
+      });
     } else {
       this.loginService.loginDispatch(this.email!.value!, this.password!.value!).subscribe((data: any) => {
         if(data.valid) {
