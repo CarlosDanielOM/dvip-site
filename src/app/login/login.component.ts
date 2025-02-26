@@ -46,8 +46,12 @@ export class LoginComponent {
     } else {
       this.loginService.loginDispatch(this.email!.value!, this.password!.value!).subscribe((data: any) => {
         if(data.valid) {
+          sessionStorage.setItem('dispatcher', JSON.stringify(data.data));
           this.router.navigate(['dashboard']);
         }
+      },
+      error => {
+        alert('Invalid Credentials');
       });
     }
   }

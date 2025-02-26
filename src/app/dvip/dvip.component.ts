@@ -148,7 +148,7 @@ export class DvipComponent {
 
             if(progress >= 1) {
               let pictureName = `${this.isEDV ? 'EDV' : 'BL'}${this.vanNumber.value!}-${type}-${this.driver.first_name}-${this.driver.last_name}-${this.date}.jpg`;
-              let previewURL = `${environment.API_URL}/pictures?key=${pictureName}&?t=${Date.now()}`;
+              let previewURL = `${environment.API_URL}/pictures/preview?key=${pictureName}&?t=${Date.now()}`;
               this.previewPicture(type, previewURL);
             }
             
