@@ -1,1 +1,95 @@
-<p>dashboard works!</p>
+<div class=" h-full">
+    <app-navbar></app-navbar>
+    <div class="container grid grid-cols-6 gap-4 mx-auto mt-2">
+        <section id="drivers" class="col-span-3 bg-white rounded-lg p-4 shadow-lg shadow-cyan-300 max-h-96 overflow-hidden">
+            <div class="top flex flex-row justify-around items-center mb-2">
+                <div class="title flex justify-center items-center w-fit">
+                    <h1 class="text-xl font-bold text-center">Drivers</h1>
+                    <span class="text-center text-lg font-bold ml-2">{{(drivers | async) ?? [] | count}}</span>
+                </div>
+                <div class="actions">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-lg" (click)="formVisible = true">Add Driver</button>
+                </div>
+            </div>
+            <div class="drivers grid grid-cols-5 gap-4 text-center">
+                <div class="name">Name:</div>
+                <div class="pin">Pin:</div>
+                <div class="dailyLimit">Daily Limit:</div>
+                <div class="totalLimit">Total Limit:</div>
+                <div class="actions">Actions:</div>
+            </div>
+            <div class="overflow-x-hidden overflow-y-auto max-h-72">
+                @for (driver of drivers | async; track driver._id) {
+                    <div class="grid grid-cols-5">
+                        <div id="driver-{{driver._id}}" class="driver col-span-4 w-full grid grid-cols-4 gap-4 gap-y-40 my-2 text-center rounded-lg h-10 max-h-10" [ngClass]="{'bg-orange-300': driver.active, 'bg-slate-300': !driver.active}">
+                            <div class="name flex justify-center items-center text-sm rounded-l-lg overflow-x-hidden overflow-y-hidden" [ngClass]="{'bg-cyan-500': driver.active, 'bg-slate-500': !driver.active}">{{driver.first_name}} {{driver.last_name}}</div>
+                            <div class="pin flex justify-center items-center overflow-x-hidden overflow-y-hidden">{{driver.pin}}</div>
+                            <div class="dailyLimit flex justify-center items-center overflow-x-hidden overflow-y-hidden">{{driver.daily_limit}}</div>
+                            <div class="totalLimit flex justify-center items-center rounded-r-lg overflow-x-hidden overflow-y-hidden" [ngClass]="{'bg-cyan-500': driver.active, 'bg-slate-500': !driver.active}">{{driver.total_limit}}</div>
+                        </div>
+                        <div class="actions flex justify-center items-center">
+                            <button class="bg-red-500 hover:bg-red-700 hover:cursor-pointer text-white text-sm py-2 px-4 rounded-lg" (click)="deleteDriver(driver._id)">Delete</button>
+                        </div>
+                    </div>
+                } @empty {
+                    <span>No Drivers</span>
+                }
+            </div>
+        </section>
+        <section id="dispatchers" class="col-span-2 col-start-5 bg-white rounded-lg p-4 shadow-lg shadow-cyan-300">
+            <h1 class="text-xl font-bold text-center">Dispatchers</h1>
+            <div class="flex flex-row justify-center">
+            </div>
+        </section>
+        <!-- <section id="vans" class="col-span-3 bg-white rounded-lg p-4 shadow-lg shadow-cyan-300">
+            <h1 class="text-xl font-bold text-center">Vans</h1>
+            <div class="flex flex-row justify-center">
+                <div class="flex flex-col justify-center items-center">
+                    <img src="https://picsum.photos/200/300" class="w-40 h-40 rounded-lg">
+                    <p class="text-lg font-bold text-center">John Doe</p>
+                    <p class="text-center">BL12345678</p>
+                </div>
+            </div>
+        </section> -->
+    </div>
+</div>
+
+@if(formVisible) {
+    <div class="form-container fixed left-[50%] top-[50%] -translate-1/2 w-96 h-96 bg-white p-4 border border-gray-400 rounded-lg overflow-hidden shadow-lg shadow-cyan-300">
+        <div class="relative">
+            <h3 class="text-xl font-bold text-center">Add Driver</h3>
+            <form [formGroup]="addDriverForm" (ngSubmit)="addDriver()">
+                <div class="row w-full flex flex-row justify-center">
+                    <div class="form-group my-4 h-16 rounded-lg w-full border flex flex-row justify-center items-center mr-2">
+                        <label for="first_name" class="text-center w-20 py-5 border-r-1 lg:py-2 lg:px-3 bg-slate-300 rounded-l-lg lg:w-1/2">First Name</label>
+                        <input type="text" name="first_name" formControlName="first_name" class="form-control w-32 lg:w-full p-2 rounded-r-lg disabled:bg-slate-300 disabled:text-white disabled:cursor-not-allowed" id="first_name" placeholder="First Name">
+                    </div>
+                    <div class="form-group my-4 h-16 rounded-lg w-full border flex flex-row justify-center items-center">
+                        <label for="last_name" class="text-center w-20 py-5 border-r-1 lg:py-2 lg:px-3 bg-slate-300 rounded-l-lg lg:w-1/2">Last Name</label>
+                        <input type="text" name="last_name" formControlName="last_name" class="form-control w-32 lg:w-full p-2 rounded-r-lg disabled:bg-slate-300 disabled:text-white disabled:cursor-not-allowed" id="last_name" placeholder="Last Name">
+                    </div>
+                </div>
+                <div class="row w-full">
+                    <div class="form-group my-4 h-16 rounded-lg w-full border flex flex-row justify-center items-center">
+                        <label for="pin" class="text-center w-20 py-5 border-r-1 lg:py-2 lg:px-3 bg-slate-300 rounded-l-lg lg:w-1/2">Pin</label>
+                        <input type="text" name="pin" formControlName="pin" class="form-control w-32 lg:w-full p-2 rounded-r-lg disabled:bg-slate-300 disabled:text-white disabled:cursor-not-allowed" id="pin" placeholder="Pin">
+                    </div>
+                </div>
+                <div class="row w-full flex flex-row justify-center">
+                    <div class="form-group my-4 h-16 rounded-lg w-full border flex flex-row justify-center items-center mr-2">
+                        <label for="daily_limit" class="text-center w-20 py-5 border-r-1 lg:py-2 lg:px-3 bg-slate-300 rounded-l-lg lg:w-1/2">Daily Limit</label>
+                        <input type="text" name="daily_limit" formControlName="daily_limit" class="form-control w-32 lg:w-full p-2 rounded-r-lg disabled:bg-slate-300 disabled:text-white disabled:cursor-not-allowed" id="daily_limit" placeholder="Daily Limit">
+                    </div>
+                    <div class="form-group my-4 h-16 rounded-lg w-full border flex flex-row justify-center items-center">
+                        <label for="total_limit" class="text-center w-20 py-5 border-r-1 lg:py-2 lg:px-3 bg-slate-300 rounded-l-lg lg:w-1/2">Total Limit</label>
+                        <input type="text" name="total_limit" formControlName="total_limit" class="form-control w-32 lg:w-full p-2 rounded-r-lg disabled:bg-slate-300 disabled:text-white disabled:cursor-not-allowed" id="total_limit" placeholder="Total Limit">
+                    </div>
+                </div>
+                <div class="form-group rounded-lg w-full flex flex-row justify-around items-center">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded-lg disabled:bg-slate-300 disabled:text-white disabled:cursor-not-allowed" id="submitButton" [disabled]="!addDriverForm.valid">Submit</button>
+                    <button class="bg-red-500 hover:bg-red-700 hover:cursor-pointer text-white text-sm py-2 px-4 rounded-lg" (click)="resetForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+}

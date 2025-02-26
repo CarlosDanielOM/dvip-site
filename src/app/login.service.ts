@@ -13,11 +13,15 @@ export class LoginService {
   ) { }
 
   loginDispatch(email: string, password: string) {
-    return this.http.post(`${environment.API_URL}/dispatch/login`, {email: email, password: password});
+    return this.http.post(`${environment.API_URL}/dispatch/login`, {email: email, password: password}).pipe(
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => error);
+      })
+    );
   } 
 
   loginDriver(driverPin: number) {
-    return this.http.post(`${environment.API_URL}/driver/login`, {pin: driverPin}).pipe(
+    return this.http.post(`${environment.API_URL}/drivers/login`, {pin: driverPin}).pipe(
       catchError((error: HttpErrorResponse) => {
         return throwError(() => error);
       })
