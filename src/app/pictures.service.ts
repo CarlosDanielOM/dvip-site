@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 
 @Injectable({
@@ -12,6 +12,21 @@ export class PicturesService {
   constructor(
     private http: HttpClient
   ) { }
+
+  getEntirePictures() {
+    return this.http.get(`${environment.API_URL}/pictures`).pipe(
+      map((data: any) => {
+        return data.data
+      }),
+      catchError((error: HttpErrorResponse) => {
+        return throwError(() => ({
+          status: error.status,
+          message: error.message,
+          statusText: error.statusText
+        }));
+      })
+    );
+  }
 
   uploadPicture(formData: any) {
     return this.http.post(`${environment.API_URL}/pictures/upload`, formData, {

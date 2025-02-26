@@ -1,1 +1,9 @@
 <app-navbar></app-navbar>
+<div class="container grid grid-cols-6 gap-4 mx-auto mt-2">
+    @for(picture of pictures | async; track $index) {
+        <div class="picture-container" ngClass="{{$index % 2 == 0 ? 'bg-white' : 'bg-slate-300'}}">
+            <h3>{{picture.split('/').pop()}}</h3>
+            <img src="{{picture}}" class="picture object-cover">
+        </div>
+    }
+</div>
