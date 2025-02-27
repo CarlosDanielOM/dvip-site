@@ -155,6 +155,9 @@ export class DvipComponent {
             break;
           case HttpEventType.Response:
               this.createAlert('Picture Uploaded Successfully!', 'Upload', 'success');
+              let pictureName = `${this.isEDV ? 'EDV' : 'BL'}${this.vanNumber.value!}-${type}-${this.driver.first_name}-${this.driver.last_name}-${this.date}.jpg`;
+              let previewURL = `${environment.API_URL}/pictures/preview?key=${pictureName}&?t=${Date.now()}`;
+              this.previewPicture(type, previewURL);
               break;
           default:
             break;
@@ -191,7 +194,7 @@ export class DvipComponent {
   }
 
   savePicturesToCloud() {
-    this.picturesService.savePictures(`${this.driver.first_name} ${this.driver.last_name}`, this.driver.id, this.isEDV ? 'EDV' : 'BL', parseInt(this.vanNumber.value!), Date.now()).subscribe(res => {
+    this.picturesService.savePictures(`${this.driver.first_name} ${this.driver.last_name}`, this.driver.id, this.isEDV ? 'EDV' : 'BL', this.vanNumber.value!, Date.now()).subscribe(res => {
       this.createAlert('Pictures Saved Successfully!', 'Save', 'success');
       this.resetLocalState();
     },
@@ -217,58 +220,58 @@ export class DvipComponent {
   handleError(status: number, message: string = '', type: string = 'Error') {
     switch(status) {
       case 400:
-        this.createAlert(message ?? 'Bad Request', type, 'error');
+        this.createAlert('Bad Request', type, 'error');
         break;
       case 401:
-        this.createAlert(message ?? 'Unauthorized', type, 'error');
+        this.createAlert('Unauthorized', type, 'error');
         break;
       case 403:
-        this.createAlert(message ?? 'Forbidden', type, 'error');
+        this.createAlert('Forbidden', type, 'error');
         break;
       case 404:
-        this.createAlert(message ?? 'Not Found', type, 'error');
+        this.createAlert('Not Found', type, 'error');
         break;
       case 405:
-        this.createAlert(message ?? 'Method Not Allowed', type, 'error');
+        this.createAlert('Method Not Allowed', type, 'error');
         break;
       case 406:
-        this.createAlert(message ?? 'Not Acceptable', type, 'error');
+        this.createAlert('Not Acceptable', type, 'error');
         break;
       case 408:
-        this.createAlert(message ?? 'Request Timeout', type, 'error');
+        this.createAlert('Request Timeout', type, 'error');
         break;
       case 409:
-        this.createAlert(message ?? 'Conflict', type, 'error');
+        this.createAlert('Conflict', type, 'error');
         break;
       case 410:
-        this.createAlert(message ?? 'Gone', type, 'error');
+        this.createAlert('Gone', type, 'error');
         break;
       case 422:
-        this.createAlert(message ?? 'Unprocessable Entity', type, 'error');
+        this.createAlert('Unprocessable Entity', type, 'error');
         break;
       case 429:
-        this.createAlert(message ?? 'Too Many Requests', type, 'error');
+        this.createAlert('Too Many Requests', type, 'error');
         break;
       case 500:
-        this.createAlert(message ?? 'Internal Server Error', type, 'error');
+        this.createAlert('Internal Server Error', type, 'error');
         break;
       case 501: 
-        this.createAlert(message ?? 'Not Implemented', type, 'error');
+        this.createAlert('Not Implemented', type, 'error');
         break;
       case 502:
-        this.createAlert(message ?? 'Bad Gateway', type, 'error');
+        this.createAlert('Bad Gateway', type, 'error');
         break;
       case 503:
-        this.createAlert(message ?? 'Service Unavailable', type, 'error');
+        this.createAlert('Service Unavailable', type, 'error');
         break;
       case 504:
-        this.createAlert(message ?? 'Gateway Timeout', type, 'error');
+        this.createAlert('Gateway Timeout', type, 'error');
         break;
       case 505:
-        this.createAlert(message ?? 'HTTP Version Not Supported', type, 'error');
+        this.createAlert('HTTP Version Not Supported', type, 'error');
         break;
       default:
-        this.createAlert(message ?? 'Something went wrong', type, 'error');
+        this.createAlert('Something went wrong', type, 'error');
         break;
     }
   }
@@ -281,7 +284,7 @@ export class DvipComponent {
     alert.classList.add('alert');
     alert.classList.add('w-full');
     alert.classList.add(`bg-${color}-600`);
-    alert.classList.add('text-white');
+    alert.classList.add('text-black');
     alert.classList.add('rounded-lg');
     alert.classList.add('shadow-lg');
     alert.classList.add('p-2');
@@ -332,20 +335,26 @@ export class DvipComponent {
 
     setTimeout(() => {
       this.elRef.nativeElement.querySelector('#alerts').removeChild(alert);
-    }, 2500)
+    }, 5000)
     
   }
 
   getAlertColor(type: string) {
+    let color = 'blue';
     switch(type) {
       case 'success':
-        return 'green';
+        color = 'green';
+        break;
       case 'error':
-        return 'red';
+        color = 'red';
+        break;
       case 'warning':
-        return 'yellow';
+        color = 'yellow';
+        break;
       default:
-        return 'blue';
+        color = 'blue';
+        break;
     }
+    return color;
   }
 }

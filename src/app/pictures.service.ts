@@ -52,7 +52,7 @@ export class PicturesService {
     });
   }
 
-  savePictures(driverName: string, driverId: string, vanType: string, vanNumber: number, date: number) {
+  savePictures(driverName: string, driverId: string, vanType: string, vanNumber: string, date: number) {
     return this.http.post(`${environment.API_URL}/pictures`, {
       "driver-name": driverName,
       "driver-id": driverId,
