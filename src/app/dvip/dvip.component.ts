@@ -284,7 +284,7 @@ export class DvipComponent {
     alert.classList.add('alert');
     alert.classList.add('w-full');
     alert.classList.add(`bg-${color}-600`);
-    alert.classList.add('text-black');
+    alert.classList.add('text-white');
     alert.classList.add('rounded-lg');
     alert.classList.add('shadow-lg');
     alert.classList.add('p-2');
