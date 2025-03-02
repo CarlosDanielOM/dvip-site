@@ -45,7 +45,6 @@ export class DashboardComponent {
   }
 
   addDriver() {
-    let random = Math.floor(Math.random() * 999999);
     let driverData: Driver = {
       first_name: this.addDriverForm.value.first_name!,
       last_name: this.addDriverForm.value.last_name!,
