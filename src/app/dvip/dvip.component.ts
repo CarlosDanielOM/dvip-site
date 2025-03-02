@@ -16,6 +16,7 @@ import imageCompression from 'browser-image-compression';
 export class DvipComponent {
   EDVRegex = /^[0-9]{4}$/;
   GasRegx = /^[0-9]{2}$/;
+  BradyRegex = /^[0]{3}$/;
   
   vanNumber = new FormControl({value: '', disabled: false}, [Validators.required]);
   vanNumberError: boolean = false;
@@ -33,6 +34,9 @@ export class DvipComponent {
   editable: boolean = true;
   picturesViewable: boolean = false;
 
+  uploading: any = [];
+  savable: boolean = true;
+
   alertsElement: any;
 
   van: string | null = '';
@@ -42,7 +46,7 @@ export class DvipComponent {
   week: string = '';
 
   compressionOptions = {
-    maxSizeMB: 1,
+    maxSizeMB: 2,
     maxWidthOrHeight: 4000,
     useWebWorker: true
   }
@@ -101,6 +105,10 @@ export class DvipComponent {
         this.isEDV = false;
         this.picturesViewable = true;
         this.vanNumberError = false;
+      } else if (this.BradyRegex.test(value!)) {
+        this.isEDV = false;
+        this.picturesViewable = true;
+        this.vanNumberError = false;
       } else {
         this.isEDV = false;
         this.picturesViewable = false;
@@ -132,7 +140,9 @@ export class DvipComponent {
 
       this.picturesService.uploadPicture(formData).subscribe((event: any) => {
         switch (event.type) {
-          case HttpEventType.Sent: 
+          case HttpEventType.Sent:
+            this.uploading.push(type.split('-')[0]);
+            this.savable = false;
             break;
           case HttpEventType.UploadProgress:
             let max = event.total;
@@ -150,6 +160,10 @@ export class DvipComponent {
               let pictureName = `${this.isEDV ? 'EDV' : 'BL'}${this.vanNumber.value!}-${type}-${this.driver.first_name}-${this.driver.last_name}-${this.date}.jpg`;
               let previewURL = `${environment.API_URL}/pictures/preview?key=${pictureName}&?t=${Date.now()}`;
               this.previewPicture(type, previewURL);
+              this.uploading = this.uploading.filter((item: any) => item !== type.split('-')[0]);
+              if(this.uploading.length === 0) {
+                this.savable = true;
+              }
             }
             
             break;
