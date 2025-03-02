@@ -1,9 +1,25 @@
 <app-navbar></app-navbar>
-<div class="container grid grid-cols-6 gap-4 mx-auto mt-2">
-    @for(picture of pictures | async; track $index) {
-        <div class="picture-container" ngClass="{{$index % 2 == 0 ? 'bg-white' : 'bg-slate-300'}}">
-            <h3>{{picture.split('/').pop()}}</h3>
-            <img src="{{picture}}" class="picture object-cover">
-        </div>
-    }
+<div class="container mx-auto">
+    <div class="flex justify-between items-center">
+        <a (click)="moveOutDirectory()" class="cursor-pointer text-blue-500 hover:text-blue-700 text-xl font-bold">../</a>
+        <a (click)="refreshPicturesRenewal()" class="cursor-pointer text-blue-500 hover:text-blue-700 text-xl font-bold">Refresh</a>
+    </div>
+    <ul class="grid gap-4 mt-2" [ngClass]="{'grid-cols-6': pathCount < 4, 'grid-cols-4': pathCount >= 4}">
+        @for(dir of directories | async; track $index) {
+            @if(pathCount < 4) {
+                <li class="w-40 h-40 bg-slate-300 text-center text-xl font-bold flex justify-center items-center align-middle" (click)="moveInDirectory(dir)">
+                    <a>{{dir}}</a>
+                </li>
+            } @else {
+                <li>
+                    <h3>{{dir}}</h3>
+                    <img src="{{dir}}" class="picture object-cover">
+                </li>
+            }
+        } @empty {
+            <li class="w-40 h-40 bg-slate-300 text-center text-xl font-bold flex justify-center items-center align-middle">
+                <a>No Pictures</a>
+            </li>
+        }
+    </ul>
 </div>
